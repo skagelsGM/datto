@@ -32,21 +32,8 @@ import java.util.stream.*;
 
 public class Parser {
 
-	private static final boolean LOG = true;
 	private static final String LETTER_REGEX = "[a-z]";
-	
-	private static class Result {
-		private String word = "";
-		private int maxRepeat = 0;
 
-		public void set(String word, int maxRepeat) {
-			this.word = word;
-			this.maxRepeat = maxRepeat;
-		}
-
-		public String getWord() { return word; }
-		public int getMaxRepeat() { return maxRepeat; }
-	}
 
 	/**
 	 * Reads input from the file located at the given inputFileName and returns the word with the highest count of a 
@@ -79,8 +66,6 @@ public class Parser {
 		return result.getWord();
 	}
 
-
-
 	/**
 	 * Returns the number of occurrences of the most repeating letter in the given word.
 	 */
@@ -97,13 +82,23 @@ public class Parser {
 				letterCounts.put(letter, count);
 		});
 		
-		// return the max letter count, 0 if no actual letters in the word
+		// return the max letter count, 0 if no valid letters in the word
 		int maxRepeat = letterCounts.values().stream().max(Integer::compare).orElse(0);
 		return maxRepeat;
 	}
 
-	private static void log(String msg) {
-		if (LOG) System.out.println(msg);		
-	}
 
+	private static class Result {
+		private String word = "";
+		private int maxRepeat = 0;
+
+		public void set(String word, int maxRepeat) {
+			this.word = word;
+			this.maxRepeat = maxRepeat;
+		}
+
+		public String getWord() { return word; }
+		public int getMaxRepeat() { return maxRepeat; }
+	}
+	
 }
