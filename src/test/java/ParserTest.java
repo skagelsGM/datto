@@ -10,7 +10,7 @@ public class ParserTest {
     private static final String BANANA_INPUT_FILE    = "./input/banana.txt";
     private static final String CARROT_INPUT_FILE    = "./input/carrot.txt";
 
-    @Test public void tesMaxRepeatingLetter() {
+    @Test public void testMaxRepeatingLetter() {
         Parser parser = new Parser();
         assertEquals( 2, parser.maxRepeatingLetter("hello"));
         assertEquals( 3, parser.maxRepeatingLetter("Everyone"));
