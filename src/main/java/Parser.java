@@ -32,11 +32,6 @@ import java.util.stream.*;
 
 public class Parser {
 	
-	public static void main(String[] args) {
-		System.out.println("Hello Datto!");
-	}
-
-
 	private static class Result {
 		private String word = "";
 		private int maxRepeat = 0;
@@ -51,31 +46,29 @@ public class Parser {
 	}
 
 	/**
-	 * Reads input from the file located at the given inputFilepath and returns the word with the highest count of a 
+	 * Reads input from the file located at the given inputFileName and returns the word with the highest count of a 
 	 * repeating letter.
 	 */
 	public String findWordWithMaxRepeatingLetter(String inputFileName) {
 		// track word with max repeating letter
 		final Result result = new Result();
 
-
 		// process the input file via a stream of lines 
 		try (Stream<String> lineStream = Files.lines(Paths.get(inputFileName))) {
 			// split on whitespace
 			lineStream.forEach( line -> {
-				List<String> words = Stream
-		            .of(line)
-		            .map(w -> w.split("\\s+")).flatMap(Arrays::stream)
-		            .collect(Collectors.toList());					
-				words.stream().forEach( word-> {
-					// - track word and max repeating letter count
-					int count = maxRepeatingLetter(w);
+				List<String> words = Stream.of(line)
+								            .map(w -> w.split("\\s+")).flatMap(Arrays::stream)
+								            .collect(Collectors.toList());
+
+				words.stream().forEach( word -> {
+					// track word and max repeating letter count, update result if higher count than current result
+					int count = maxRepeatingLetter(word);
 					if (count > result.getMaxRepeat()) {
 						result.set(word, count);
 					} 
 				});
 			});
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -84,25 +77,22 @@ public class Parser {
 	}
 
 	/**
-	 * Returns the count of the most repeating letter in the given word
+	 * Returns the number of occurrences of the most repeating letter in the given word.
 	 */
 	public int maxRepeatingLetter(String word) {
-		// track count of repeating letters in word and return the max
+		// track letter count per letter in the word
 		final Map<Character,Integer> letterCounts = new HashMap<Character,Integer>();
 
+		// increment letter occurrence count in the word as each letter is encontered
 		Stream<Character> letterStream = word.toLowerCase().chars().mapToObj( i -> (char)i );
 		letterStream.forEach( letter -> {
 			int count = letterCounts.containsKey(letter) ? letterCounts.get(letter) + 1 : 1;
 			letterCounts.put(letter, count);
 		});
 		
-		letterCounts.keySet().stream().forEach( k -> log(k + " count: " + letterCounts.get(k)));
-
+		// return the max letter count
 		int maxRepeat = letterCounts.values().stream().max(Integer::compare).get();
 		return maxRepeat;
 	}
 
-	private static void log(String msg) {
-		System.out.println(msg);
-	}
 }
