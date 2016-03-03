@@ -31,6 +31,9 @@ import java.util.*;
 import java.util.stream.*;
 
 public class Parser {
+
+	private static final boolean LOG = true;
+	private static final String LETTER_REGEX = "[a-z]";
 	
 	private static class Result {
 		private String word = "";
@@ -58,11 +61,11 @@ public class Parser {
 			// split on whitespace
 			lineStream.forEach( line -> {
 				List<String> words = Stream.of(line)
-								            .map(w -> w.split("\\s+")).flatMap(Arrays::stream)
-								            .collect(Collectors.toList());
+						            .map(w -> w.split("\\s+")).flatMap(Arrays::stream)
+						            .collect(Collectors.toList());
 
-				words.stream().forEach( word -> {
-					// track word and max repeating letter count, update result if higher count than current result
+				// track word and max repeating letter count
+				words.stream().forEach( word -> {					
 					int count = maxRepeatingLetter(word);
 					if (count > result.getMaxRepeat()) {
 						result.set(word, count);
@@ -76,6 +79,8 @@ public class Parser {
 		return result.getWord();
 	}
 
+
+
 	/**
 	 * Returns the number of occurrences of the most repeating letter in the given word.
 	 */
@@ -85,14 +90,20 @@ public class Parser {
 
 		// increment letter occurrence count in the word as each letter is encontered
 		Stream<Character> letterStream = word.toLowerCase().chars().mapToObj( i -> (char)i );
-		letterStream.forEach( letter -> {
-			int count = letterCounts.containsKey(letter) ? letterCounts.get(letter) + 1 : 1;
-			letterCounts.put(letter, count);
+		
+		letterStream.filter( c -> c.toString().matches(LETTER_REGEX) )
+			.forEach( letter -> {
+				int count = letterCounts.containsKey(letter) ? letterCounts.get(letter) + 1 : 1;
+				letterCounts.put(letter, count);
 		});
 		
-		// return the max letter count
-		int maxRepeat = letterCounts.values().stream().max(Integer::compare).get();
+		// return the max letter count, 0 if no actual letters in the word
+		int maxRepeat = letterCounts.values().stream().max(Integer::compare).orElse(0);
 		return maxRepeat;
+	}
+
+	private static void log(String msg) {
+		if (LOG) System.out.println(msg);		
 	}
 
 }
