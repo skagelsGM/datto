@@ -34,81 +34,80 @@ import java.util.regex.Pattern;
 
 public class Parser {
 
-	private static final String LETTER_REGEX = "[a-z]";
-	private static final Pattern LETTER_PATTERN = Pattern.compile(LETTER_REGEX);
-	private static final Predicate<String> LETTER_PREDICATE = LETTER_PATTERN.asPredicate();
+    private static final String LETTER_REGEX = "[a-z]";
+    private static final Pattern LETTER_PATTERN = Pattern.compile(LETTER_REGEX);
+    private static final Predicate<String> LETTER_PREDICATE = LETTER_PATTERN.asPredicate();
 
 
-	/**
-	 * Reads input from the file located at the given inputFileName and returns the word with the highest count of a 
-	 * repeating letter.
-	 */
-	public String findWordWithMaxRepeatingLetter(String inputFileName) {
-		// track word with max repeating letter
-		final MaxRepeat maxRepeat = new MaxRepeat();
+    /**
+     * Reads input from the file located at the given inputFileName and returns the word with the highest count of a
+     * repeating letter.
+     */
+    public String findWordWithMaxRepeatingLetter(String inputFileName) {
+        // track word with max repeating letter
+        final MaxRepeat maxRepeat = new MaxRepeat();
 
-		// process the input file via a stream of lines 
-		try (Stream<String> lineStream = Files.lines(Paths.get(inputFileName))) {
-			// split on whitespace
-			lineStream.forEach( line -> {
-				List<String> words = Stream.of(line)
-										.map(w -> w.split("[\\s]+")).flatMap(Arrays::stream)
-										.collect(Collectors.toList());
+        // process the input file via a stream of lines
+        try (Stream<String> lineStream = Files.lines(Paths.get(inputFileName))) {
+            // split on whitespace
+            lineStream.forEach( line -> {
+                List<String> words = Stream.of(line)
+                                        .map(w -> w.split("[\\s]+")).flatMap(Arrays::stream)
+                                        .collect(Collectors.toList());
 
-				// track word and max repeating letter count
-				words.stream().forEach( word -> {
-					int count = maxRepeatingLetter(word);
-					if (count > maxRepeat.getCount()) {
-						maxRepeat.set( trim(word), count );
-					} 
-				});
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+                // track word and max repeating letter count
+                words.stream().forEach( word -> {
+                    int count = maxRepeatingLetter(word);
+                    if (count > maxRepeat.getCount()) {
+                        maxRepeat.set( trim(word), count );
+                    }
+                });
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		return maxRepeat.getWord();
-	}
+        return maxRepeat.getWord();
+    }
 
-	// edge case: last word in a sentence: drop the trailing punctuation mark
-	private String trim(String word) {
-		return word.matches(".*[.?!]") ? word.substring(0, word.length()-1) : word;
-	}
+    /**
+     * Returns the number of occurrences of the most repeating letter in the given word.
+     */
+    public int maxRepeatingLetter(String word) {
+        // track letter count per letter in the word
+        final Map<String,Integer> letterCounts = new HashMap<String,Integer>();
 
-	/**
-	 * Returns the number of occurrences of the most repeating letter in the given word.
-	 */
-	public int maxRepeatingLetter(String word) {
-		// track letter count per letter in the word
-		final Map<String,Integer> letterCounts = new HashMap<String,Integer>();
-		
-		// increment letter occurrence count in the word as each letter is encontered
-		word.toLowerCase().chars()
-			.mapToObj( i -> String.valueOf( (char)i ))
-			.filter(LETTER_PREDICATE)
-			.forEach( letter -> {
-				int count = letterCounts.containsKey(letter) ? letterCounts.get(letter) + 1 : 1;
-				letterCounts.put(letter, count);
-			}
-		);
-		
-		// return the max letter count
-		int maxCount = letterCounts.values().stream().max(Integer::compare).orElse(0);
-		return maxCount;
-	}
+        // increment letter occurrence count in the word as each letter is encontered
+        word.toLowerCase().chars()
+            .mapToObj( i -> String.valueOf( (char)i ))
+            .filter(LETTER_PREDICATE)
+            .forEach( letter -> {
+                int count = letterCounts.containsKey(letter) ? letterCounts.get(letter) + 1 : 1;
+                letterCounts.put(letter, count);
+            }
+        );
 
+        // return the max letter count
+        int maxCount = letterCounts.values().stream().max(Integer::compare).orElse(0);
+        return maxCount;
+    }
 
-	private static class MaxRepeat {
-		private String word = "";
-		private int count = 0;
+    // edge case: last word in a sentence: drop the trailing punctuation mark
+    private String trim(String word) {
+        return word.matches(".*[.?!]") ? word.substring(0, word.length()-1) : word;
+    }
 
-		public void set(String word, int count) {
-			this.word = word;
-			this.count = count;
-		}
+    private static class MaxRepeat {
+        private String word = "";
+        private int count = 0;
 
-		public String getWord() { return word; }
-		public int getCount() { return count; }
-	}
-	
+        public void set(String word, int count) {
+            this.word = word;
+            this.count = count;
+        }
+
+        public String getWord() { return word; }
+        public int getCount() { return count; }
+    }
+
 }
