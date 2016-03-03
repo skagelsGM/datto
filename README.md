@@ -1,9 +1,6 @@
 # Sample Code for Datto
 
-This sample project was created with Gradle. The Gradle Wrapper has been included in this project so that some one can build and execute
-the project even if Gradle is not previously installed on their system. The Gradle Wrapper will download and install the required version of Gradle for this project. 
-
-However, this project requires *JDK 1.8 to build and execute*.
+This sample project was created with Gradle. The Gradle Wrapper has been included in this project so that someone can build and execute test cases even if Gradle is currently installed on the system. The Gradle Wrapper will download and install the required version of Gradle for this project if it is not present. *However, this project does requires that JDK 1.8 is installed and that JAVA_HOME environment variable is set accordingly.*
 
 ## Source Code
 The source code for this exercies is located in the following file:
